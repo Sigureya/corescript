@@ -461,7 +461,7 @@ Game_Action.prototype.itemCri = function(target) {
     return this.item().damage.critical ? this.subject().cri * (1 - target.cev) : 0;
 };
 
-Game_Action.prototype.apply = function(target) {
+Game_Action.prototype.makeResult =function(target){
     var result = target.result();
     this.subject().clearResult();
     result.clear();
@@ -470,17 +470,26 @@ Game_Action.prototype.apply = function(target) {
     result.evaded = (!result.missed && Math.random() < this.itemEva(target));
     result.physical = this.isPhysical();
     result.drain = this.isDrain();
+    return result;
+};
+
+Game_Action.prototype.apply = function(target) {
+    var result = this.makeResult(target);
     if (result.isHit()) {
         if (this.item().damage.type > 0) {
             result.critical = (Math.random() < this.itemCri(target));
             var value = this.makeDamageValue(target, result.critical);
             this.executeDamage(target, value);
         }
-        this.item().effects.forEach(function(effect) {
-            this.applyItemEffect(target, effect);
-        }, this);
+        this.applyEachItemEfect(target);
         this.applyItemUserEffect(target);
     }
+};
+
+Game_Action.prototype.applyEachItemEfect = function(target){
+    this.item().effects.forEach(function(effect) {
+        this.applyItemEffect(target, effect);
+    }, this);
 };
 
 Game_Action.prototype.makeDamageValue = function(target, critical) {
