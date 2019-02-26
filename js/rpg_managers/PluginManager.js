@@ -32,6 +32,9 @@ PluginManager.checkErrors = function() {
 PluginManager.parameters = function(name) {
     return this._parameters[name.toLowerCase()] || {};
 };
+PluginManager.isEnabled =function(name){
+    return !!this.parameters(name);
+};
 
 PluginManager.setParameters = function(name, parameters) {
     this._parameters[name.toLowerCase()] = parameters;
